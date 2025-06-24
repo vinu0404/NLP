@@ -223,13 +223,15 @@ def apply_modern_theme():
                 border-radius: 12px;
                 padding: 0.7rem 1.5rem;
                 border: 1px solid rgba(102, 126, 234, 0.15);
-                font-weight: 500;
+                font-weight: 600; /* Increased font weight for boldness */
+                color: #1A202C; /* Darker color for tab text */
                 transition: all 0.3s ease;
             }
             
             .stTabs [aria-selected="true"] {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white !important;
+                color: white !important; /* White text for active tab */
+                font-weight: 700; /* Even bolder for active tab */
                 box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
             }
             
@@ -283,7 +285,7 @@ def apply_modern_theme():
 
             /* Section headers */
             .section-header {
-                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100);
                 padding: 1rem 1.5rem;
                 border-radius: 12px;
                 border-left: 4px solid #667eea;
@@ -643,11 +645,10 @@ def create_metrics_dashboard(medical_summary, sentiment_report):
     with col3:
         sentiment = sentiment_report["patient_sentiment"]["overall_sentiment"].title()
         confidence = sentiment_report["patient_sentiment"]["confidence"]
-        # Ensure sentiment text is contained
         st.markdown(f"""
-        <div class="metric-card" style="overflow: hidden; text-overflow: ellipsis;">
-            <div class="metric-value" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{sentiment}</div>
-            <div class="metric-label">Patient Sentiment</div>
+        <div class="metric-card">
+            <div class="metric-value">{sentiment}</div>
+            <div class="metric-label">Sentiment</div>
         </div>
         """, unsafe_allow_html=True)
         st.progress(confidence, text=f"Confidence: {confidence:.1%}")
@@ -659,7 +660,7 @@ def create_metrics_dashboard(medical_summary, sentiment_report):
         st.markdown(f"""
         <div class="metric-card" style="overflow: hidden; text-overflow: ellipsis;">
             <div class="metric-value" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{engagement}</div>
-            <div class="metric-label">Engagement Level</div>
+            <div class="metric-label">Engagement</div>
         </div>
         """, unsafe_allow_html=True)
         st.progress(min(balance, 1.0), text=f"Balance: {balance:.1f}")
@@ -855,7 +856,7 @@ Patient: Thank you, doctor. I feel much better knowing what this might be."""
             create_clinical_overview(medical_summary)
             
             # Tabbed results display
-            tab1, tab2, tab3 = st.tabs(["📋 Medical Summary", "🏥 SOAP Note", "😊 Sentiment Analysis"])
+            tab1, tab2, tab3 = st.tabs(["📋 Medical Summary   ", "🏥 SOAP Note   ", "😊 Sentiment Analysis  "])
             
             with tab1:
                 if "Medical Summary" in analysis_options:
