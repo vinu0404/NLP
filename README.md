@@ -1,5 +1,7 @@
 # AI Clinical Intelligence Platform
 
+#### Demo["https://emitrr-sjqi.onrender.com"]
+
 ## Overview
 
 The AI Clinical Intelligence Platform is an advanced medical transcript analysis system that transforms clinical conversations into structured documentation using state-of-the-art Natural Language Processing (NLP) and Machine Learning techniques. The platform automatically extracts medical entities, generates SOAP notes, performs sentiment analysis, and provides comprehensive quality metrics for healthcare documentation.
