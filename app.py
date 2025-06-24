@@ -619,29 +619,34 @@ def create_metrics_dashboard(medical_summary, sentiment_report):
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        entities_count = medical_summary["quality_metrics"]["entities_extracted"]
+        diagnosis = medical_summary["clinical_assessment"]["diagnosis"]
+        # Truncate diagnosis to prevent overflow while keeping it readable
+        display_diagnosis = (diagnosis[:20] + '...') if len(diagnosis) > 20 else diagnosis
         st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value">{entities_count}</div>
-            <div class="metric-label">Medical Entities</div>
+        <div class="metric-card" style="overflow: hidden; text-overflow: ellipsis;">
+            <div class="metric-value" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{diagnosis}">{display_diagnosis}</div>
+            <div class="metric-label">Diagnosis</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        dialogue_turns = medical_summary["quality_metrics"]["dialogue_turns"]
+        medications = medical_summary["treatment_information"]["medications"]
+        # Display first medication or 'None' if empty, with truncation
+        display_med = medications[0][:20] + '...' if medications and len(medications[0]) > 20 else medications[0] if medications else 'None'
         st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value">{dialogue_turns}</div>
-            <div class="metric-label">Dialogue Turns</div>
+        <div class="metric-card" style="overflow: hidden; text-overflow: ellipsis;">
+            <div class="metric-value" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{medications[0] if medications else 'None'}">{display_med}</div>
+            <div class="metric-label">Medication</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
         sentiment = sentiment_report["patient_sentiment"]["overall_sentiment"].title()
         confidence = sentiment_report["patient_sentiment"]["confidence"]
+        # Ensure sentiment text is contained
         st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value">{sentiment}</div>
+        <div class="metric-card" style="overflow: hidden; text-overflow: ellipsis;">
+            <div class="metric-value" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{sentiment}</div>
             <div class="metric-label">Patient Sentiment</div>
         </div>
         """, unsafe_allow_html=True)
@@ -650,9 +655,10 @@ def create_metrics_dashboard(medical_summary, sentiment_report):
     with col4:
         engagement = sentiment_report["dialogue_metrics"]["engagement_level"].title()
         balance = sentiment_report["dialogue_metrics"]["conversation_balance"]
+        # Ensure engagement text is contained
         st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value">{engagement}</div>
+        <div class="metric-card" style="overflow: hidden; text-overflow: ellipsis;">
+            <div class="metric-value" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{engagement}</div>
             <div class="metric-label">Engagement Level</div>
         </div>
         """, unsafe_allow_html=True)
@@ -789,7 +795,7 @@ Patient: Thank you, doctor. I feel much better knowing what this might be."""
     analysis_options = st.sidebar.multiselect(
         "Select analysis types:",
         ["Medical Summary", "SOAP Note", "Sentiment Analysis", "Quality Metrics"],
-        default=["Medical Summary", "SOAP Note", "Sentiment Analysis"]
+        default=["Medical Summary", "SOAP Note", "Sentiment Analysis","Quality Metrics"]
     )
     
     # Main content area
@@ -849,7 +855,7 @@ Patient: Thank you, doctor. I feel much better knowing what this might be."""
             create_clinical_overview(medical_summary)
             
             # Tabbed results display
-            tab1, tab2, tab3, tab4 = st.tabs(["📋 Medical Summary", "🏥 SOAP Note", "😊 Sentiment Analysis", "📊 Export Options"])
+            tab1, tab2, tab3 = st.tabs(["📋 Medical Summary", "🏥 SOAP Note", "😊 Sentiment Analysis"])
             
             with tab1:
                 if "Medical Summary" in analysis_options:
@@ -988,74 +994,7 @@ Patient: Thank you, doctor. I feel much better knowing what this might be."""
                     display_json_with_styling(sentiment_report, "📄 Sentiment Analysis JSON")
                     st.markdown('</div>', unsafe_allow_html=True)
             
-            with tab4:
-                st.markdown('<div class="content-card">', unsafe_allow_html=True)
-                st.subheader("📊 Export & Download Options")
-                
-                # Export options
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    st.markdown("#### 📄 Individual Reports")
-                    
-                    # Medical Summary download
-                    medical_json = json.dumps(medical_summary, indent=2)
-                    st.download_button(
-                        label="📋 Download Medical Summary",
-                        data=medical_json,
-                        file_name=f"medical_summary_{medical_summary['session_id']}.json",
-                        mime="application/json"
-                    )
-                    
-                    # SOAP Note download
-                    soap_json = json.dumps(soap_note, indent=2)
-                    st.download_button(
-                        label="🏥 Download SOAP Note",
-                        data=soap_json,
-                        file_name=f"soap_note_{soap_note['session_id']}.json",
-                        mime="application/json"
-                    )
-                    
-                    # Sentiment Report download
-                    sentiment_json = json.dumps(sentiment_report, indent=2)
-                    st.download_button(
-                        label="😊 Download Sentiment Analysis",
-                        data=sentiment_json,
-                        file_name=f"sentiment_report_{sentiment_report['session_id']}.json",
-                        mime="application/json"
-                    )
-                
-                with col2:
-                    st.markdown("#### 📦 Complete Package")
-                    
-                    # Combined report
-                    complete_report = {
-                        "session_info": {
-                            "session_id": medical_summary["session_id"],
-                            "timestamp": medical_summary["timestamp"],
-                            "analysis_timestamp": datetime.now().isoformat()
-                        },
-                        "medical_summary": medical_summary,
-                        "soap_note": soap_note,
-                        "sentiment_report": sentiment_report,
-                        "original_transcript": transcript_text
-                    }
-                    
-                    complete_json = json.dumps(complete_report, indent=2)
-                    st.download_button(
-                        label="📦 Download Complete Analysis Package",
-                        data=complete_json,
-                        file_name=f"complete_analysis_{medical_summary['session_id']}.json",
-                        mime="application/json"
-                    )
-                    
-                    # Summary statistics
-                    st.markdown("#### 📈 Session Statistics")
-                    st.metric("Total Entities Extracted", medical_summary["quality_metrics"]["entities_extracted"])
-                    st.metric("Dialogue Turns", medical_summary["quality_metrics"]["dialogue_turns"])
-                    st.metric("Analysis Completion", "100%")
-                
-                st.markdown('</div>', unsafe_allow_html=True)
+            
     
     else:
         # Welcome message when no transcript is loaded
