@@ -70,7 +70,17 @@ graph TD
     I --> K
     J --> K
     K --> L[Export & Visualization]
+
 ```
+
+### Screenshots
+   <img src="images/Screenshot 2025-06-25 110113.png" alt="Platform dashboard displaying medical transcript analysis results, including extracted medical entities, sentiment scores, and structured SOAP notes. The interface features a clean, modern design with a sidebar for navigation and a main panel showing detailed analytics and visualizations. The overall tone is professional and user-friendly." />
+   <img src="images\Screenshot 2025-06-25 110214.png" />
+
+   <img src="images\Screenshot 2025-06-25 110306.png" />
+
+   <img src="images\Screenshot 2025-06-25 110338.png" />
+   
 
 ### Technical Components
 
